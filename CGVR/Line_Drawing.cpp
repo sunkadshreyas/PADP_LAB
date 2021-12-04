@@ -122,7 +122,7 @@ void mouseFunc(int button, int state, int x, int y)
 	}
 }
 
-void display(){}
+void display() {}
 
 int main(int argc, char** argv)
 {
@@ -145,15 +145,16 @@ int main(int argc, char** argv)
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	glutInitWindowPosition(100, 200);
 	glutCreateWindow("Line Drawing");
-	myInit();
 	if (choice == 2)
 	{
 		glutMouseFunc(mouseFunc);
+		glutDisplayFunc(display);
+		myInit();
 	}
 	else
 	{
-		drawLine();
+		glutDisplayFunc(drawLine);
+		myInit();
 	}
-	glutDisplayFunc(display);
 	glutMainLoop();
 }
