@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include<gl/glut.h>
 
-#define outcode int
+#define regcode int
 #define true 1
 #define false 0
 double xmin, ymin, xmax, ymax;
@@ -11,10 +11,11 @@ double xvmin, yvmin, xvmax, yvmax;
 
 const int RIGHT = 4;
 const int LEFT = 8;
-const int TOP = 1;
+const int TOP = 1; // in all top codes 1st bit is 1
 const int BOTTOM = 2;
 
 int n;
+
 struct line_segment {
 	int x1;
 	int y1;
@@ -23,9 +24,9 @@ struct line_segment {
 };
 struct line_segment ls[10];
 
-outcode computeoutcode(double x, double y)
+regcode computeregcode(double x, double y)
 {
-	outcode code = 0;
+	regcode code = 0;
 	if (y > ymax)
 		code |= TOP;
 	else if (y < ymin)
@@ -34,43 +35,46 @@ outcode computeoutcode(double x, double y)
 		code |= RIGHT;
 	else if (x < xmin)
 		code |= LEFT;
-
 	return code;
 }
 
 
 void cohensuther(double x0, double y0, double x1, double y1)
 {
-	outcode outcode0, outcode1, outcodeout;
+	regcode regcode0, regcode1, regcodeout;
 	bool accept = false, done = false;
-
-	outcode0 = computeoutcode(x0, y0);
-	outcode1 = computeoutcode(x1, y1);
+	
+	regcode0 = computeregcode(x0, y0); // region code of first point
+	regcode1 = computeregcode(x1, y1); // region code of second point
 
 	do
 	{
-		if (!(outcode0 | outcode1))
+		if ((regcode0 | regcode1) == 0)
 		{
+			// both points inside the window
 			accept = true;
 			done = true;
 		}
-		else if (outcode0 & outcode1)
+		else if (regcode0 & regcode1)
+		{
+			// both outside
 			done = true;
+		}
 		else
 		{
 			double x, y;
-			outcodeout = outcode0 ? outcode0 : outcode1;
-			if (outcodeout & TOP)
+			regcodeout = regcode0 != 0 ? regcode0 : regcode1;
+			if (regcodeout & TOP)
 			{
 				x = x0 + (x1 - x0) * (ymax - y0) / (y1 - y0);
 				y = ymax;
 			}
-			else if (outcodeout & BOTTOM)
+			else if (regcodeout & BOTTOM)
 			{
 				x = x0 + (x1 - x0) * (ymin - y0) / (y1 - y0);
 				y = ymin;
 			}
-			else if (outcodeout & RIGHT)
+			else if (regcodeout & RIGHT)
 			{
 				y = y0 + (y1 - y0) * (xmax - x0) / (x1 - x0);
 				x = xmax;
@@ -81,17 +85,17 @@ void cohensuther(double x0, double y0, double x1, double y1)
 				x = xmin;
 			}
 
-			if (outcodeout == outcode0)
+			if (regcodeout == regcode0)
 			{
 				x0 = x;
 				y0 = y;
-				outcode0 = computeoutcode(x0, y0);
+				regcode0 = computeregcode(x0, y0);
 			}
 			else
 			{
 				x1 = x;
 				y1 = y;
-				outcode1 = computeoutcode(x1, y1);
+				regcode1 = computeregcode(x1, y1);
 			}
 		}
 
@@ -106,6 +110,7 @@ void cohensuther(double x0, double y0, double x1, double y1)
 		double vx1 = xvmin + (x1 - xmin) * sx;
 		double vy1 = yvmin + (y1 - ymin) * sy;
 
+		// drawing the clipping window
 		glColor3f(1, 0, 0);
 		glBegin(GL_LINE_LOOP);
 		glVertex2f(xvmin, yvmin);
@@ -114,6 +119,7 @@ void cohensuther(double x0, double y0, double x1, double y1)
 		glVertex2f(xvmin, yvmax);
 		glEnd();
 
+		// drawing the line
 		glColor3f(0, 0, 1);
 		glBegin(GL_LINES);
 		glVertex2d(vx0, vy0);
@@ -126,6 +132,7 @@ void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	// WINDOW 
 	glColor3f(0, 0, 1);
 	glBegin(GL_LINE_LOOP);
 	glVertex2f(xmin, ymin);
@@ -133,6 +140,7 @@ void display()
 	glVertex2f(xmax, ymax);
 	glVertex2f(xmin, ymax);
 	glEnd();
+
 	for (int i = 0; i < n; i++)
 	{
 		glBegin(GL_LINES);
@@ -141,6 +149,7 @@ void display()
 		glEnd();
 	}
 
+	// NOW DRAW CLIPPING WINDOW AND CLIPPED LINES
 	for (int i = 0; i < n; i++)
 		cohensuther(ls[i].x1, ls[i].y1, ls[i].x2, ls[i].y2);
 
@@ -149,17 +158,19 @@ void display()
 void myinit()
 {
 	glClearColor(1, 1, 1, 1);
-	glColor3f(1, 0, 0);
-	glPointSize(1.0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluOrtho2D(0, 500, 0, 500);
+	//glColor3f(1, 0, 0);
+	//glPointSize(1.0);
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
+	gluOrtho2D(0, 600, 0, 600);
 }
 
 int main(int argc, char** argv)
 {
+	// Original
 	std::cout << "Enter window coordinates (xmin ymin xmax ymax): \n";
 	std::cin >> xmin >> ymin >> xmax >> ymax;
+	// Clipped
 	std::cout << "Enter viewport coordinates (xvmin yvmin xvmax yvmax) :\n";
 	std::cin >> xvmin >> yvmin >> xvmax >> yvmax;
 	std::cout << "Enter no. of lines:\n";
@@ -171,10 +182,9 @@ int main(int argc, char** argv)
 	}
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-	glutInitWindowSize(500, 500);
-	glutInitWindowPosition(0, 0);
+	glutInitWindowSize(600, 600);
 	glutCreateWindow("clip");
-	myinit();
 	glutDisplayFunc(display);
+	myinit();
 	glutMainLoop();
 }
