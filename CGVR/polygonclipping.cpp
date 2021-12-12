@@ -3,7 +3,8 @@
 #include<iostream>
 #include<GL/glut.h>
 using namespace std;
-int poly_size, poly_points[20][2], org_poly_size, org_poly_points[20][2], clipper_size, clipper_points[20][2];
+int poly_size, poly_points[20][2];
+int org_poly_size, org_poly_points[20][2], clipper_size, clipper_points[20][2];
 const int MAX_POINTS = 20;
 
 
@@ -17,30 +18,25 @@ void drawPoly(int p[][2], int n) {
 	glEnd();
 }
 
-int x_intersect(int x1, int y1, int x2, int y2,
-	int x3, int y3, int x4, int y4)
+int x_intersect(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4)
 {
-	int num = (x1 * y2 - y1 * x2) * (x3 - x4) -
-		(x1 - x2) * (x3 * y4 - y3 * x4);
+	int num = (x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4);
 	int den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
 	return num / den;
 }
 
 // Returns y-value of point of intersectipn of 
 // two lines 
-int y_intersect(int x1, int y1, int x2, int y2,
-	int x3, int y3, int x4, int y4)
+int y_intersect(int x1, int y1, int x2, int y2,  int x3, int y3, int x4, int y4)
 {
-	int num = (x1 * y2 - y1 * x2) * (y3 - y4) -
-		(y1 - y2) * (x3 * y4 - y3 * x4);
+	int num = (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4);
 	int den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
 	return num / den;
 }
 
 // This functions clips all the edges w.r.t one clip 
 // edge of clipping area 
-void clip(int poly_points[][2], int& poly_size,
-	int x1, int y1, int x2, int y2)
+void clip(int poly_points[][2], int& poly_size, int x1, int y1, int x2, int y2)
 {
 	int new_points[MAX_POINTS][2], new_poly_size = 0;
 
@@ -54,7 +50,7 @@ void clip(int poly_points[][2], int& poly_size,
 		int kx = poly_points[k][0], ky = poly_points[k][1];
 
 		// Calculating position of first point 
-		// w.r.t. clipper line 
+		// i_pos stands for intercept (c) value
 		int i_pos = (x2 - x1) * (iy - y1) - (y2 - y1) * (ix - x1);
 
 		// Calculating position of second point 
@@ -75,10 +71,8 @@ void clip(int poly_points[][2], int& poly_size,
 		{
 			// Point of intersection with edge 
 			// and the second point is added 
-			new_points[new_poly_size][0] = x_intersect(x1,
-				y1, x2, y2, ix, iy, kx, ky);
-			new_points[new_poly_size][1] = y_intersect(x1,
-				y1, x2, y2, ix, iy, kx, ky);
+			new_points[new_poly_size][0] = x_intersect(x1, y1, x2, y2, ix, iy, kx, ky);
+			new_points[new_poly_size][1] = y_intersect(x1, y1, x2, y2, ix, iy, kx, ky);
 			new_poly_size++;
 
 			new_points[new_poly_size][0] = kx;
@@ -90,10 +84,8 @@ void clip(int poly_points[][2], int& poly_size,
 		else if (i_pos >= 0 && k_pos < 0)
 		{
 			//Only point of intersection with edge is added 
-			new_points[new_poly_size][0] = x_intersect(x1,
-				y1, x2, y2, ix, iy, kx, ky);
-			new_points[new_poly_size][1] = y_intersect(x1,
-				y1, x2, y2, ix, iy, kx, ky);
+			new_points[new_poly_size][0] = x_intersect(x1, y1, x2, y2, ix, iy, kx, ky);
+			new_points[new_poly_size][1] = y_intersect(x1, y1, x2, y2, ix, iy, kx, ky);
 			new_poly_size++;
 		}
 
@@ -117,20 +109,16 @@ void clip(int poly_points[][2], int& poly_size,
 
 void init() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0.0, 500.0, 0.0, 500.0, 0.0, 500.0);
-	glClear(GL_COLOR_BUFFER_BIT);
+	gluOrtho2D(0.0, 500.0, 0.0, 500.0);
 }
 
 // Implements Sutherlandï¿½Hodgman algorithm 
 void display()
 {
-	init();
-	glColor3f(1.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	// draw the clipping window
 	drawPoly(clipper_points, clipper_size);
-
-	glColor3f(0.0f, 1.0f, 0.0f);
+	// draw the original polgon
 	drawPoly(org_poly_points, org_poly_size);
 	//i and k are two consecutive indexes 
 
@@ -140,12 +128,9 @@ void display()
 
 		// We pass the current array of vertices, it's size 
 		// and the end points of the selected clipper line 
-		clip(poly_points, poly_size, clipper_points[i][0],
-			clipper_points[i][1], clipper_points[k][0],
-			clipper_points[k][1]);
+		clip(poly_points, poly_size, clipper_points[i][0], clipper_points[i][1], clipper_points[k][0], clipper_points[k][1]);
 	}
-
-	glColor3f(0.0f, 0.0f, 1.0f);
+	// draw the clipped polygon
 	drawPoly(poly_points, poly_size);
 	glFlush();
 }
@@ -153,7 +138,7 @@ void display()
 //Driver code 
 int main(int argc, char* argv[])
 {
-	printf("Enter no. of vertices: \n");
+	printf("Enter no. of polygon vertices: \n");
 	scanf_s("%d", &poly_size);
 	org_poly_size = poly_size;
 	for (int i = 0; i < poly_size; i++)
@@ -175,10 +160,9 @@ int main(int argc, char* argv[])
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
 	glutInitWindowSize(400, 400);
-	glutInitWindowPosition(100, 100);
 	glutCreateWindow("Polygon Clipping!");
 	glutDisplayFunc(display);
+	init();
 	glutMainLoop();
 	return 0;
 }
-
