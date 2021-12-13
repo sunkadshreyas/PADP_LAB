@@ -9,9 +9,11 @@ int xc, yc, r;
 int p1_x, p2_x, p1_y, p2_y;
 int point1_done = 0;
 
-void draw_circle(int xc, int yc, int x, int y)
+void draw_circle(int x, int y)
 {
 	glBegin(GL_POINTS);
+	glColor3f(1, 0, 0);
+	glPointSize(3.0);
 	glVertex2i(xc + x, yc + y);
 	glVertex2i(xc - x, yc + y);
 	glVertex2i(xc + x, yc - y);
@@ -30,7 +32,7 @@ void circleBres()
 	int d = 3 - 2 * r;
 	while (x <= y)
 	{
-		draw_circle(xc, yc, x, y);
+		draw_circle(x, y);
 		x++;
 		if (d < 0)
 			d = d + 4 * x + 6;
@@ -39,7 +41,7 @@ void circleBres()
 			y--;
 			d = d + 4 * (x - y) + 10;
 		}
-		draw_circle(xc, yc, x, y);
+		draw_circle(x, y);
 	}
 	glFlush();
 }
@@ -65,13 +67,11 @@ void mouseFuncCircle(int button, int state, int x, int y)
 	}
 }
 
-void drawingCircle(){}
+void drawingCircle() {}
 
 void myInit()
 {
 	glClearColor(1, 1, 1, 1);
-	glColor3f(0.0, 1.0, 0.0);
-	glPointSize(3.0);
 	gluOrtho2D(-250, 250, -250, 250);
 }
 
@@ -85,7 +85,7 @@ int main(int argc, char** argv)
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	switch (choice)
 	{
-	case 1 : 
+	case 1:
 		std::cout << "Enter coordinates of the center and radius : \n";
 		std::cin >> xc >> yc >> r;
 		glutCreateWindow("Circle Keyboard");
@@ -103,4 +103,3 @@ int main(int argc, char** argv)
 	}
 	glutMainLoop();
 }
-
