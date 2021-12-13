@@ -11,7 +11,8 @@ int angle;
 float m, c, theta;
 void display()
 {
-	glClearColor(1, 1, 1, 0);
+	// rotation 
+	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -30,17 +31,19 @@ void display()
 	glTranslatef(100, 100, 0);
 	glRotatef(angle, 0, 0, 1);
 	glTranslatef(-100, -100, 0);
-	glColor3f(1, 1, 0);
+	glColor3f(0, 1, 0);
 	glBegin(GL_LINE_LOOP);
 	for (int i = 0; i < 11; i++)
 		glVertex2fv(house[i]);
 	glEnd();
+	// finish
 	glPopMatrix();
 	glFlush();
 }
 void display2()
 {
-	glClearColor(1, 1, 1, 0);
+	// reflect about line
+	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -58,14 +61,13 @@ void display2()
 	float x1 = 0, x2 = 500;
 	float y1 = m * x1 + c;
 	float y2 = m * x2 + c;
-	glColor3f(1, 1, 0);
+	glColor3f(0, 1, 0);
 	glBegin(GL_LINES);
 	glVertex2f(x1, y1);
 	glVertex2f(x2, y2);
 	glEnd();
 	glFlush();
-
-	//Reflected
+	//Reflected house
 	glPushMatrix();
 	glTranslatef(0, c, 0);
 	theta = atan(m);
@@ -83,10 +85,10 @@ void display2()
 }
 void myInit() {
 	glClearColor(1.0, 1.0, 1.0, 1.0);
-	glColor3f(1.0, 0.0, 0.0);
-	glLineWidth(2.0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+	//glColor3f(1.0, 0.0, 0.0);
+	//glLineWidth(2.0);
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
 	gluOrtho2D(-450, 450, -450, 450);
 }
 void mouse(int btn, int state, int x, int y) {
@@ -106,11 +108,9 @@ void main(int argc, char** argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
 	glutInitWindowSize(900, 900);
-	glutInitWindowPosition(100, 100);
 	glutCreateWindow("House Rotation");
 	glutDisplayFunc(display);
 	glutMouseFunc(mouse);
 	myInit();
 	glutMainLoop();
 }
-
