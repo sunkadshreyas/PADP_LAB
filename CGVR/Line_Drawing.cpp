@@ -2,8 +2,8 @@
 #include<gl/glut.h>
 #include<iostream>
 
-#define WINDOW_HEIGHT 600
-#define WINDOW_WIDTH 600
+#define WINDOW_HEIGHT 500
+#define WINDOW_WIDTH 500
 
 int x1, x2, yc1, y2, flag = 0;
 
@@ -22,10 +22,18 @@ void drawPixel(int x, int y)
 void drawLine()
 {
 	int dx, dy, i, e;
-	int incx = 1, incy = 1, inc1, inc2;
+	int incx, incy, inc1, inc2;
 	int x, y;
 	dx = x2 - x1;
 	dy = y2 - yc1;
+	if (x2 < x1)
+		incx = -1;
+	else
+		incx = 1;
+	if (y2 < yc1)
+		incy = -1;
+	else
+		incy = 1;
 	if (dx == 0)
 	{
 		for (i = 0; i <= dy; i++)
@@ -42,10 +50,6 @@ void drawLine()
 		dx = -dx;
 	if (dy < 0)
 		dy = -dy;
-	if (x2 < x1)
-		incx = -1;
-	if (y2 < yc1)
-		incy = -1;
 	x = x1;
 	y = yc1;
 	if (dx > dy)
@@ -129,21 +133,9 @@ int main(int argc, char** argv)
 	int choice;
 	std::cout << "Enter 1 for keyboard and 2 for mouse \n";
 	std::cin >> choice;
-	if (choice == 1)
-	{
-		std::cout << "Enter x1 : ";
-		std::cin >> x1;
-		std::cout << "Enter yc1 : ";
-		std::cin >> yc1;
-		std::cout << "Enter x2 : ";
-		std::cin >> x2;
-		std::cout << "Enter y2 : ";
-		std::cin >> y2;
-	}
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-	glutInitWindowPosition(100, 200);
+	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT); 
 	glutCreateWindow("Line Drawing");
 	if (choice == 2)
 	{
@@ -153,6 +145,14 @@ int main(int argc, char** argv)
 	}
 	else
 	{
+		std::cout << "Enter x1 : ";
+		std::cin >> x1;
+		std::cout << "Enter yc1 : ";
+		std::cin >> yc1;
+		std::cout << "Enter x2 : ";
+		std::cin >> x2;
+		std::cout << "Enter y2 : ";
+		std::cin >> y2;
 		glutDisplayFunc(drawLine);
 		myInit();
 	}
