@@ -27,7 +27,7 @@ int x_intersect(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4)
 
 // Returns y-value of point of intersectipn of 
 // two lines 
-int y_intersect(int x1, int y1, int x2, int y2,  int x3, int y3, int x4, int y4)
+int y_intersect(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4)
 {
 	int num = (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4);
 	int den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
@@ -69,7 +69,7 @@ void clip(int poly_points[][2], int& poly_size, int x1, int y1, int x2, int y2)
 		// Case 2: When only first point is outside 
 		else if (i_pos < 0 && k_pos >= 0)
 		{
-			// Point of intersection with edge 
+			// Point of intersectihon with edge 
 			// and the second point is added 
 			new_points[new_poly_size][0] = x_intersect(x1, y1, x2, y2, ix, iy, kx, ky);
 			new_points[new_poly_size][1] = y_intersect(x1, y1, x2, y2, ix, iy, kx, ky);
@@ -117,8 +117,10 @@ void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	// draw the clipping window
+	glColor3f(0, 0, 1);
 	drawPoly(clipper_points, clipper_size);
 	// draw the original polgon
+	glColor3f(0,1,0);
 	drawPoly(org_poly_points, org_poly_size);
 	//i and k are two consecutive indexes 
 
@@ -131,6 +133,7 @@ void display()
 		clip(poly_points, poly_size, clipper_points[i][0], clipper_points[i][1], clipper_points[k][0], clipper_points[k][1]);
 	}
 	// draw the clipped polygon
+	glColor3f(1, 0, 0);
 	drawPoly(poly_points, poly_size);
 	glFlush();
 }
