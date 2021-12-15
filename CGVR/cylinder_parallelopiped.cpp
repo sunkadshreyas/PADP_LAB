@@ -1,28 +1,24 @@
 #include <GL/glut.h>
 
-void draw_pixel(int cx, int cy)
-{
-	glColor3f(0, 1.0, 0.0);
-	glBegin(GL_POINTS);
-	glVertex2i(cx, cy);
-	glEnd();
-}
 
 void plotpixels(int h, int k, int x, int y)
 {
-	draw_pixel(h + x, k + y);
-	draw_pixel(h - x, k + y);
-	draw_pixel(h + x, k - y);
-	draw_pixel(h - x, k - y);
-	draw_pixel(h + y, k + x);
-	draw_pixel(h - y, k + x);
-	draw_pixel(h + y, k - x);
-	draw_pixel(h - y, k - x);
+	glBegin(GL_POINTS);
+	glColor3f(0, 1, 0);
+	glVertex2f(h + x, k + y);
+	glVertex2f(h - x, k + y);
+	glVertex2f(h + x, k - y);
+	glVertex2f(h - x, k - y);
+	glVertex2f(h + y, k + x);
+	glVertex2f(h - y, k + x);
+	glVertex2f(h + y, k - x);
+	glVertex2f(h - y, k - x);
+	glEnd();
 }
 
 void Circle_draw(int h, int k, int r)  // Midpoint Circle Drawing Algorithm
 {
-	int d = 3 - 2*r, x = 0, y = r;
+	int d = 3 - 2 * r, x = 0, y = r;
 	while (x <= y)
 	{
 		plotpixels(h, k, x, y);
@@ -42,7 +38,7 @@ void Cylinder_draw()
 {
 	int xc = 100, yc = 100, r = 50, i, n = 50;
 
-	for (i = 0; i < n; i += 3)
+	for (i = 0; i < n; i += 2)
 		Circle_draw(xc, yc + i, r);
 }
 
