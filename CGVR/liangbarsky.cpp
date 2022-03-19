@@ -37,14 +37,6 @@ bool cliptest(double p, double q, double* u1, double* u2)
 void LiangBarskyLineClipAndDraw(double x0, double y0, double x1, double y1)
 {
 	double dx = x1 - x0, dy = y1 - y0, u1 = 0.0, u2 = 1.0;
-	//draw a red colored viewport
-	glColor3f(1.0, 0.0, 0.0);
-	glBegin(GL_LINE_LOOP);
-	glVertex2f(xvmin, yvmin);
-	glVertex2f(xvmax, yvmin);
-	glVertex2f(xvmax, yvmax);
-	glVertex2f(xvmin, yvmax);
-	glEnd();
 
 	if (cliptest(-dx, x0 - xmin, &u1, &u2))  // inside test wrt left edge
 		if (cliptest(dx, xmax - x0, &u1, &u2)) // inside test wrt right edge
@@ -54,7 +46,7 @@ void LiangBarskyLineClipAndDraw(double x0, double y0, double x1, double y1)
 					if (u2 < 1.0)
 					{
 						x1 = x0 + u2 * dx;
-						y1 = y0 + u2 * dy; 
+						y1 = y0 + u2 * dy;
 					}
 					if (u1 > 0.0)
 					{
@@ -81,7 +73,7 @@ void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	//draw the line with red color
-	glColor3f(1.0, 0.0, 0.0);
+	glColor3f(0.0, 0.0, 1.0);
 	for (int i = 0; i < n; i++)
 	{
 		glBegin(GL_LINES);
@@ -97,6 +89,16 @@ void display()
 	glVertex2f(xmax, ymax);
 	glVertex2f(xmin, ymax);
 	glEnd();
+
+	//draw a red colored viewport
+	glColor3f(1.0, 0.0, 0.0);
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(xvmin, yvmin);
+	glVertex2f(xvmax, yvmin);
+	glVertex2f(xvmax, yvmax);
+	glVertex2f(xvmin, yvmax);
+	glEnd();
+
 	for (int i = 0; i < n; i++)
 		LiangBarskyLineClipAndDraw(ls[i].x1, ls[i].y1, ls[i].x2, ls[i].y2);
 	glFlush();
